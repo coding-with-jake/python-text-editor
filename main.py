@@ -1,6 +1,9 @@
 import sys
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, QAction, QStatusBar, QTextEdit, QVBoxLayout, QWidget
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, QStatusBar, QTextEdit, QVBoxLayout, \
+    QWidget, QFileDialog, QDialogButtonBox, QDialog, QMessageBox
+
 
 # Subclass QMainWindow to customize your application's main window
 class MainWindow(QMainWindow):
@@ -11,11 +14,13 @@ class MainWindow(QMainWindow):
 
         main_layout = QVBoxLayout()
 
-        button = QPushButton("Press Me!")
-        text_area = QTextEdit()
+        self.button = QPushButton("Save!")
+        self.button.setCheckable(True)
+        self.button.clicked.connect(self.onMyToolBarButtonClick)
+        self.text_area = QTextEdit()
 
-        main_layout.addWidget(button)
-        main_layout.addWidget(text_area)
+        main_layout.addWidget(self.button)
+        main_layout.addWidget(self.text_area)
 
         self.setMinimumSize(QSize(1200, 800))
 
@@ -26,21 +31,26 @@ class MainWindow(QMainWindow):
         toolbar = QToolBar("Tools")
         self.addToolBar(toolbar)
 
-        button_action = QAction("Your Button", self)
-        button_action.setStatusTip("This is your button")
-        button_action.triggered.connect(self.onMyToolBarButtonClick)
-        button_action.setCheckable(True)
-        toolbar.addAction(button_action)
-
         self.setStatusBar(QStatusBar(self))
 
         menu = self.menuBar()
 
         file_menu = menu.addMenu("&File")
-        file_menu.addAction(button_action)
+        # file_menu.addAction(button_action)
 
-    def onMyToolBarButtonClick(selfself, s):
+    def onMyToolBarButtonClick(self, s):
         print("click", s)
+        testing_text = self.text_area.toPlainText()
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("I have a question!")
+        dlg.setText(testing_text)
+        dlg.setStandardButtons(QMessageBox.StandardButton.Save)
+        dlg.setIcon(QMessageBox.Icon.NoIcon)
+        button = dlg.exec()
+
+        if button == QMessageBox.StandardButton.Ok:
+            print("OK!")
+
 
 # You need one (and only one) QApplication instance per application.
 # Pass in sys.argv to allow command line arguments for your app.
